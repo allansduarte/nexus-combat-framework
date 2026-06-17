@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://caby4b7juiv3u"]
+
+[ext_resource type="Texture2D" uid="uid://d4km1d4ds2cg4" path="res://icon.svg" id="1_icon"]
+[ext_resource type="Script" uid="uid://dxh6y2fr5j7hp" path="res://src/entities/Player.gd" id="2_player_script"]
+[ext_resource type="Resource" path="res://src/resources/player_attack.tres" id="3_player_attack"]
+[ext_resource type="Script" uid="uid://bu8fkfi1iobve" path="res://src/components/HitboxComponent.gd" id="4_hitbox_script"]
+[ext_resource type="Script" uid="uid://ca1p502h3b1tl" path="res://src/entities/EnemyDummy.gd" id="5_dummy_script"]
+[ext_resource type="Script" uid="uid://bhbskwuh8cs1x" path="res://src/components/HealthComponent.gd" id="6_health_script"]
+[ext_resource type="Script" uid="uid://dffhqpdcarsm8" path="res://src/components/HurtboxComponent.gd" id="7_hurtbox_script"]
+[ext_resource type="Script" uid="uid://bystlibhl64al" path="res://src/components/CombatHandler.gd" id="8_handler_script"]
+[ext_resource type="Script" uid="uid://d3ghdylysqf4h" path="res://src/ui/PlaygroundUI.gd" id="9_ui_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+size = Vector2(80, 80)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dummy"]
+size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
+size = Vector2(72, 72)
+
+[node name="Playground" type="Node2D" unique_id=785009463]
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=244020961]
+position = Vector2(200, 300)
+script = ExtResource("2_player_script")
+attack_resource = ExtResource("3_player_attack")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=1230060180]
+texture = ExtResource("1_icon")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=762261942]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="HitboxComponent" type="Area2D" parent="Player" unique_id=595839051]
+position = Vector2(40, 0)
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("4_hitbox_script")
+attack = ExtResource("3_player_attack")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/HitboxComponent" unique_id=1428604146]
+shape = SubResource("RectangleShape2D_hitbox")
+debug_color = Color(0.9, 0.1, 0.1, 0.42)
+
+[node name="EnemyDummy" type="CharacterBody2D" parent="." unique_id=249862354]
+position = Vector2(600, 300)
+script = ExtResource("5_dummy_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="EnemyDummy" unique_id=1143550985]
+modulate = Color(0.9, 0.4, 0.4, 1)
+texture = ExtResource("1_icon")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyDummy" unique_id=23693673]
+shape = SubResource("RectangleShape2D_dummy")
+
+[node name="HealthComponent" type="Node" parent="EnemyDummy" unique_id=817162281]
+script = ExtResource("6_health_script")
+
+[node name="HurtboxComponent" type="Area2D" parent="EnemyDummy" unique_id=168272419]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("7_hurtbox_script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyDummy/HurtboxComponent" unique_id=1076939031]
+shape = SubResource("RectangleShape2D_hurtbox")
+debug_color = Color(0.1, 0.9, 0.1, 0.42)
+
+[node name="CombatHandler" type="Node" parent="EnemyDummy" unique_id=892681397 node_paths=PackedStringArray("hurtbox")]
+script = ExtResource("8_handler_script")
+hurtbox = NodePath("../HurtboxComponent")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1846784105]
+
+[node name="PlaygroundUI" type="Control" parent="CanvasLayer" unique_id=442036454 node_paths=PackedStringArray("dummy")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_ui_script")
+dummy = NodePath("../../EnemyDummy")
+
+[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer/PlaygroundUI" unique_id=11010671]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 50.0
+offset_right = 200.0
+offset_bottom = 80.0
+grow_horizontal = 2
+value = 100.0
